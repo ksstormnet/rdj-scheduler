@@ -97,6 +97,71 @@ radiodj/
 3. Documentation
 4. Bug fixing
 
+## Display Architecture
+
+### Terminal Output Standards
+1. Status Message Format
+- [.] Shows operation in progress
+- [✓] Indicates success
+- [✗] Indicates failure
+- Status messages are white by default
+- Use single-line updates in non-debug mode
+
+2. Debug Output
+- Prefixed with "DEBUG:" in dim grey
+- Only shown when debug mode is enabled
+- Output through stderr
+- Provides detailed operation information
+- Includes timing and verification data
+
+3. Color Standards
+- Status messages: White
+- Success indicators: Green
+- Failure indicators: Red
+- Debug messages: Dim grey
+- Error messages: Red
+
+### Terminal Requirements
+1. Display Compatibility
+- ANSI color support required
+- Unicode support for status indicators
+- Minimum 80x24 terminal size
+- Support for carriage return (\r)
+
+2. Testing Considerations
+- Test both debug and non-debug modes
+- Verify color display in various terminals
+- Check status line overwriting
+- Validate debug output formatting
+
+### Component Status Output
+1. Development Standards
+- Use status_testing() for operations in progress
+- Use status_success() for successful completion
+- Use status_failure() for operation failures
+- Include meaningful status messages
+- Keep status updates concise
+
+2. Integration Requirements
+- Consistent status format across components
+- Clear error reporting
+- Proper debug output handling
+- Status message spacing standardization
+
+### Debug Output Conventions
+1. Message Format
+- Begin with component/function name
+- Include relevant variable values
+- Show operation progression
+- Keep messages clear and concise
+
+2. Output Categories
+- Operation progress
+- Variable state changes
+- Error conditions
+- Performance metrics
+- Database operations
+
 ## Integration Approach
 
 1. Component Integration

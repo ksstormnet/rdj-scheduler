@@ -46,11 +46,22 @@ This tool works directly with RadioDJ's database structure to:
 ## Installation
 
 ### Prerequisites
+
+#### System Requirements
 - Bash 4.0 or higher
-- Access to RadioDJ database
-- SQLite3 command-line tools
-- jq (JSON processor)
+- Terminal with ANSI color support
 - Standard GNU utilities
+- jq (JSON processor)
+
+#### Database Requirements
+- MySQL 5.7 or newer
+- Access to RadioDJ database
+- CREATE, SELECT, UPDATE permissions
+- Properly configured my.cnf or connection parameters
+
+#### Optional Tools
+- MySQL Workbench or similar for database inspection
+- Screen or tmux for persistent sessions
 
 ### Setup Steps
 1. Clone this repository:
@@ -75,9 +86,15 @@ Basic usage:
 ```
 
 Available options:
-- `-d, --debug`: Enable debug mode for detailed output
+- `-d, --debug`: Enable debug mode for detailed output including:
+    - Database operations
+    - Command execution details
+    - Data validation results
 - `-s, --show-current`: Display current hour template
 - `-h, --help`: Show help message
+
+Debug output appears in grey below status messages, while status indicators
+show operation progress with [.], success [✓], or failure [✗].
 
 Example:
 ```bash
