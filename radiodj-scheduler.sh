@@ -124,6 +124,8 @@ log_debug "Initialized with log level $LOG_LEVEL"
 source "${SCRIPT_DIR}/db/db-interface.sh"
 # shellcheck source=db/db-test.sh
 source "${SCRIPT_DIR}/db/db-test.sh"
+# shellcheck source=db/db-backup.sh
+source "${SCRIPT_DIR}/db/db-backup.sh"
 
 # Main function definition
 main() {
@@ -142,7 +144,23 @@ main() {
         return 1
     fi
     log_info "Songs table access test successful"
-    
+
+    # Test backup functionality
+    log_info "Testing backup functionality..."
+    if ! test_backup; then
+        log_error "Backup functionality test failed"
+        return 1
+    fi
+    log_info "Backup functionality test successful"
+
+    # Backup events table schema and sample data for reference
+    log_info "Starting backup of events table schema and sample data..."
+    if ! db_backup_schema_and_sample events; then
+        log_error "Events table schema and sample backup failed"
+        return 1
+    fi
+    log_info "Events table schema and sample backup completed successfully"
+
     return 0
 }
 

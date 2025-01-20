@@ -34,6 +34,12 @@ The RadioDJ Content Scheduling System provides end-to-end automation for radio p
 - Performance monitoring
 - Verification and validation tools
 
+#### Database Management
+- Table schema backups
+- Single/Multi-table backup support
+- Backup verification
+- Sample data preservation
+
 ## RadioDJ Integration
 
 This tool works directly with RadioDJ's database structure to:
@@ -82,7 +88,17 @@ nano config.sh  # Edit your database settings
 
 Basic usage:
 ```bash
-./hour-builder.sh
+# Run the main scheduler
+./radiodj-scheduler.sh
+
+# Run backup tests
+./tests/test-backup.sh
+
+# Backup single table
+./db-backup.sh events
+
+# Backup multiple tables
+./db-backup.sh "events songs rotations"
 ```
 
 - `--no-debug`: Disable debug mode (enabled by default during testing)

@@ -18,28 +18,40 @@ export SYMBOL_X="✗"
 export SYMBOL_TESTING="."
 
 # Status indicator functions with proper spacing
-status_testing() { 
-    if [ "$is_debug" = true ]; then
-        echo -en "${COLOR_WHITE}${COLOR_BOLD}[${COLOR_YELLOW}${SYMBOL_TESTING}${COLOR_WHITE}]${COLOR_RESET} $1\n"
+status_testing() {
+    local message="${1:-}"
+    if [ -z "$message" ]; then
+        message="Testing..."
+    fi
+    if [ "${is_debug:-false}" = true ]; then
+        echo -en "${COLOR_WHITE}${COLOR_BOLD}[${COLOR_YELLOW}${SYMBOL_TESTING}${COLOR_WHITE}]${COLOR_RESET} ${message}\n"
     else
-        echo -en "${COLOR_WHITE}${COLOR_BOLD}[${COLOR_YELLOW}${SYMBOL_TESTING}${COLOR_WHITE}]${COLOR_RESET} $1"
+        echo -en "${COLOR_WHITE}${COLOR_BOLD}[${COLOR_YELLOW}${SYMBOL_TESTING}${COLOR_WHITE}]${COLOR_RESET} ${message}"
     fi
     sleep 1
 }
 
 status_success() {
-    if [ "$is_debug" = true ]; then
-        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_GREEN}${SYMBOL_CHECK}${COLOR_WHITE}]${COLOR_RESET} $1\n\n"
+    local message="${1:-}"
+    if [ -z "$message" ]; then
+        message="Success"
+    fi
+    if [ "${is_debug:-false}" = true ]; then
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_GREEN}${SYMBOL_CHECK}${COLOR_WHITE}]${COLOR_RESET} ${message}\n\n"
     else
-        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_GREEN}${SYMBOL_CHECK}${COLOR_WHITE}]${COLOR_RESET} $1\n"
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_GREEN}${SYMBOL_CHECK}${COLOR_WHITE}]${COLOR_RESET} ${message}\n"
     fi
 }
 
 status_failure() {
-    if [ "$is_debug" = true ]; then
-        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_RED}${SYMBOL_X}${COLOR_WHITE}]${COLOR_RESET} $1\n\n"
+    local message="${1:-}"
+    if [ -z "$message" ]; then
+        message="Failed"
+    fi
+    if [ "${is_debug:-false}" = true ]; then
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_RED}${SYMBOL_X}${COLOR_WHITE}]${COLOR_RESET} ${message}\n\n"
     else
-        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_RED}${SYMBOL_X}${COLOR_WHITE}]${COLOR_RESET} $1\n"
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_RED}${SYMBOL_X}${COLOR_WHITE}]${COLOR_RESET} ${message}\n"
     fi
 }
 

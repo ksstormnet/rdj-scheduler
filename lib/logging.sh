@@ -6,10 +6,11 @@
 set -euo pipefail
 
 # Log levels (exportable for testing)
-declare -gr LOG_LEVEL_ERROR=0
-declare -gr LOG_LEVEL_WARN=1 
-declare -gr LOG_LEVEL_INFO=2  
-declare -gr LOG_LEVEL_DEBUG=3
+# Only declare log levels if not already set
+[[ -z "${LOG_LEVEL_ERROR:-}" ]] && declare -gr LOG_LEVEL_ERROR=0
+[[ -z "${LOG_LEVEL_WARN:-}" ]] && declare -gr LOG_LEVEL_WARN=1
+[[ -z "${LOG_LEVEL_INFO:-}" ]] && declare -gr LOG_LEVEL_INFO=2
+[[ -z "${LOG_LEVEL_DEBUG:-}" ]] && declare -gr LOG_LEVEL_DEBUG=3
 
 # Export log levels for testing
 export LOG_LEVEL_ERROR LOG_LEVEL_WARN LOG_LEVEL_INFO LOG_LEVEL_DEBUG

@@ -1,3 +1,8 @@
 # Ignore logs directory and files
 logs/
 *.log
+
+# Backup files
+backups/
+*.sql
+*.bak
