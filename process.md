@@ -4,99 +4,72 @@
 
 ```
 radiodj/
-├── scripts/              # Main script directory
-│   ├── core/            # Core functionality scripts
-│   ├── utils/           # Utility scripts
-│   └── db/              # Database interaction scripts
-├── tests/               # BATS test files
-│   ├── unit/           # Unit tests
-│   └── integration/    # Integration tests
-├── config/              # Configuration files
-│   ├── templates/      # Hour templates
-│   └── rules/         # Business rules
-└── docs/               # Documentation
+├── db/                  # Database interaction scripts
+│   ├── db-interface.sh  # Core database operations
+│   └── db-test.sh      # Database testing utilities
+├── config/             # Configuration files
+└── docs/              # Documentation and process files
 ```
 
 ## Component Breakdown
 
 ### Core Components
-1. Database Interaction Layer
-- db-connect.sh: Database connection management
-- db-query.sh: Common query operations
-- db-update.sh: Database update operations
 
-2. Template Management
-- template-parser.sh: Parse hour templates
-- template-validator.sh: Validate template structure
-- template-builder.sh: Generate new templates
+1. Database Interaction Layer (Implemented)
+- db-interface.sh: Core database operations
+* Database connectivity
+* Transaction management
+* Query execution
+* Table operations
+- db-test.sh: Database testing and validation
 
-3. Content Scheduling
-- slot-finder.sh: Find available slots
-- content-matcher.sh: Match content to slots
-- rotation-manager.sh: Manage content rotation
+2. Template Management (Planned)
+- Hour template parsing and validation
+- Template generation and management
+- Template application logic
 
-4. Business Rules Engine
-- rule-validator.sh: Validate against rules
-- constraint-checker.sh: Check scheduling constraints
-- pattern-matcher.sh: Verify commercial patterns
+3. Content Scheduling (Planned)
+- Slot finding and management
+- Content matching algorithms
+- Rotation management
 
-5. Main Scheduler
-- hour-builder.sh: Main scheduling script
-- schedule-generator.sh: Generate full schedules
-- export-schedule.sh: Export to RadioDJ format
-
-## Testing Strategy
-
-### Unit Testing
-- Use BATS (Bash Automated Testing System)
-- One test file per script
-- Test structure:
-```bash
-@test "function_name: test description" {
-    run ./script_name.sh args
-    [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "expected output" ]
-}
-```
-
-### Integration Testing
-- Test component interactions
-- Use mock database for testing
-- Verify end-to-end workflows
-- Test business rule compliance
-
+4. Business Rules Engine (Planned)
+- Rule validation
+- Constraint checking
+- Pattern matching
+- Position rules
 ## Implementation Phases
 
-### Phase 1: Foundation (2 weeks)
-1. Set up project structure
-2. Implement basic database connectivity
-3. Create configuration management
-4. Establish test framework
+### Phase 1: Database Foundation (Current)
+1. ✓ Basic project structure
+2. ✓ Database interface implementation
+3. ✓ Database testing and validation
+4. - Configuration management setup
+5. - Basic logging implementation
 
-### Phase 2: Core Components (3 weeks)
-1. Implement template management
-2. Develop basic content matching
-3. Create slot finding logic
-4. Build rotation management
+### Phase 2: Template Management (Next)
+1. Template format definition
+2. Template parsing implementation
+3. Template validation logic
+4. Template management utilities
 
-### Phase 3: Business Rules (2 weeks)
-1. Implement rule validation
-2. Add constraint checking
-3. Create pattern matching
-4. Develop position rules
+### Phase 3: Scheduling Logic
+1. Content matching algorithms
+2. Slot management implementation
+3. Rotation rules
+4. Schedule generation
 
-### Phase 4: Integration (2 weeks)
-1. Combine components
-2. Implement main scheduler
-3. Add export functionality
-4. Create logging and error handling
+### Phase 4: Business Rules Integration
+1. Rule validation framework
+2. Constraint implementation
+3. Pattern matching
+4. Position rules
 
-### Phase 5: Testing and Refinement (1 week)
-1. Comprehensive testing
-2. Performance optimization
-3. Documentation
-4. Bug fixing
-
+### Phase 5: Refinement and Export
+1. Performance optimization
+2. RadioDJ export functionality
+3. Error handling improvements
+4. Documentation
 ## Display Architecture
 
 ### Terminal Output Standards
@@ -179,59 +152,6 @@ radiodj/
 - Start with SQLite for testing
 - Add RadioDJ database support
 - Implement failover handling
-
-## Development Workflow
-
-1. Test-Driven Development
-```bash
-# 1. Write test
-vim tests/unit/test_script.bats
-# 2. Run test (should fail)
-bats tests/unit/test_script.bats
-# 3. Implement feature
-vim scripts/script.sh
-# 4. Run test (should pass)
-bats tests/unit/test_script.bats
-# 5. Refactor if needed
-```
-
-2. Git Workflow
-- One feature branch per component
-- Pull request for each completed component
-- Code review required
-- Tests must pass before merge
-
-3. Commit Strategy
-- Atomic commits
-- Clear commit messages
-- Reference ticket numbers
-- Include test cases
-
-4. Documentation
-- Update docs with each feature
-- Include usage examples
-- Document configuration options
-- Maintain CHANGELOG.md
-
-## Quality Assurance
-
-1. Code Quality
-- Use shellcheck for linting
-- Follow Google's Shell Style Guide
-- Regular code reviews
-- Maintain modular design
-
-2. Testing Requirements
-- 100% test coverage for critical paths
-- Both positive and negative test cases
-- Performance benchmarks
-- Security testing
-
-3. Monitoring
-- Error logging
-- Performance metrics
-- Usage statistics
-- Database monitoring
 
 ## Delivery and Deployment
 

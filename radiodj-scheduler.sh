@@ -87,27 +87,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Source additional components
 # shellcheck disable=SC1094
 source "${SCRIPT_DIR}/display-helpers.sh"
-source "${SCRIPT_DIR}/db-handler.sh"
-# Test songs table can be accessed
-test_songs_table() {
-    local song_count
-    local debug_message=""
-    
-    status_testing "Songs Table"
-
-    debug_write "Testing MySQL connection"
-    if ! event_run mysql radiodj -N -B -e "SELECT COUNT(*) FROM songs LIMIT 1" >/dev/null 2>&1; then
-        debug_write "Songs table test failed"
-        status_failure "Songs table not accessible"
-        return 1
-    fi
-
-    song_count=$(event_run mysql radiodj -N -B -e "SELECT COUNT(*) FROM songs")
-    debug_write "Found ${song_count} songs"
-
-    status_success "Songs Table"
-}
-
+source "${SCRIPT_DIR}/db/db-interface.sh"
+source "${SCRIPT_DIR}/db/db-test.sh"
 # Main function definition
 main() {
     # Test database connection first
