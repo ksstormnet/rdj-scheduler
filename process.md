@@ -45,7 +45,7 @@ radiodj/
 2. ✓ Database interface implementation
 3. ✓ Database testing and validation
 4. - Configuration management setup
-5. - Basic logging implementation
+5. ✓ Basic logging implementation
 
 ### Phase 2: Template Management (Next)
 1. Template format definition
@@ -81,11 +81,12 @@ radiodj/
 - Use single-line updates in non-debug mode
 
 2. Debug Output
-- Prefixed with "DEBUG:" in dim grey
-- Only shown when debug mode is enabled
-- Output through stderr
-- Provides detailed operation information
-- Includes timing and verification data
+- Defaults to on during testing
+- Disabled with --no-debug flag
+- Shows database operations
+- Shows test verification details
+- Log level set to DEBUG
+- Includes database query results
 
 3. Color Standards
 - Status messages: White
