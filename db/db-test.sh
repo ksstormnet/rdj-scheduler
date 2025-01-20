@@ -76,3 +76,45 @@ test_songs_table() {
     status_success "DB: read"
     return 0
 }
+
+# Tests backup functionality by creating and verifying a backup
+test_backup() {
+    status_testing "DB: backup"
+
+    local backup_file date_str
+    date_str=$(date +%Y-%m-%d)
+    backup_file="backups/events-schema-sample-${date_str}.sql"
+
+    mkdir -p backups
+
+    if ! db_backup_schema_and_sample "events" >/dev/null 2>&1; then
+        status_failure "Failed to create backup"
+        debug_write "Backup command failed"
+        return 1
+    fi
+
+    if [ ! -f "$backup_file" ]; then
+        status_failure "Backup file not created"
+        debug_write "Expected backup file at: $backup_file"
+        return 1
+    fi
+
+    if ! grep -q "CREATE TABLE.*events" "$backup_file"; then
+        status_failure "Backup missing table structure"
+        debug_write "No CREATE TABLE found in backup"
+        rm -f "$backup_file"
+        return 1
+    fi
+
+    if ! grep -q "INSERT INTO.*events" "$backup_file"; then
+        status_failure "Backup missing sample data"
+        debug_write "No INSERT statements found in backup"
+        rm -f "$backup_file"
+        return 1
+    fi
+
+    debug_write "Backup verified successfully"
+    rm -f "$backup_file"
+    status_success "DB: backup"
+    return 0
+}
