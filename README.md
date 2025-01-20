@@ -85,15 +85,28 @@ Basic usage:
 ./hour-builder.sh
 ```
 
-Available options:
-- `-d, --debug`: Enable debug mode for detailed output including:
-    - Database operations
-    - Command execution details
-    - Data validation results
+- `--no-debug`: Disable debug mode (enabled by default during testing)
 - `-s, --show-current`: Display current hour template
 - `-h, --help`: Show help message
 
-Debug output appears in grey below status messages, while status indicators
+Debug mode (default during testing):
+- Shows detailed database operations
+- Shows command execution details
+- Sets logging level to DEBUG
+- Shows SQL query results
+
+Non-debug mode:
+- Shows only essential information
+- Sets logging level to INFO
+- Cleaner status output
+
+Log files are written to logs/app.log (excluded from git) with
+format: [TIMESTAMP] [LEVEL] Message
+
+Status indicators show operation progress:
+- [.] Shows operation in progress
+- [✓] Indicates success (in bold)
+- [✗] Indicates failure (in bold)
 show operation progress with [.], success [✓], or failure [✗].
 
 Example:

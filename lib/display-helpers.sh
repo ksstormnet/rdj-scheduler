@@ -8,6 +8,7 @@ export COLOR_BLUE=$'\e[0;34m'
 export COLOR_MAGENTA=$'\e[0;35m'
 export COLOR_CYAN=$'\e[0;36m'
 export COLOR_WHITE=$'\e[1;37m'
+export COLOR_BOLD=$'\e[1m'
 export COLOR_DIM_GREY=$'\e[1;30m'
 export COLOR_RESET=$'\e[0m'
 
@@ -19,26 +20,26 @@ export SYMBOL_TESTING="."
 # Status indicator functions with proper spacing
 status_testing() { 
     if [ "$is_debug" = true ]; then
-        echo -en "${COLOR_YELLOW}[${SYMBOL_TESTING}]${COLOR_RESET} ${COLOR_WHITE}$1${COLOR_RESET}\n"
+        echo -en "${COLOR_WHITE}${COLOR_BOLD}[${COLOR_YELLOW}${SYMBOL_TESTING}${COLOR_WHITE}]${COLOR_RESET} $1\n"
     else
-        echo -en "${COLOR_YELLOW}[${SYMBOL_TESTING}]${COLOR_RESET} ${COLOR_WHITE}$1${COLOR_RESET}"
+        echo -en "${COLOR_WHITE}${COLOR_BOLD}[${COLOR_YELLOW}${SYMBOL_TESTING}${COLOR_WHITE}]${COLOR_RESET} $1"
     fi
     sleep 1
 }
 
 status_success() {
     if [ "$is_debug" = true ]; then
-        echo -en "${COLOR_GREEN}[${SYMBOL_CHECK}]${COLOR_RESET} ${COLOR_WHITE}$1${COLOR_RESET}\n\n"
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_GREEN}${SYMBOL_CHECK}${COLOR_WHITE}]${COLOR_RESET} $1\n\n"
     else
-        echo -en "\r${COLOR_GREEN}[${SYMBOL_CHECK}]${COLOR_RESET} ${COLOR_WHITE}$1${COLOR_RESET}\n"
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_GREEN}${SYMBOL_CHECK}${COLOR_WHITE}]${COLOR_RESET} $1\n"
     fi
 }
 
 status_failure() {
     if [ "$is_debug" = true ]; then
-        echo -en "${COLOR_RED}[${SYMBOL_X}]${COLOR_RESET} ${COLOR_WHITE}$1${COLOR_RESET}\n\n"
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_RED}${SYMBOL_X}${COLOR_WHITE}]${COLOR_RESET} $1\n\n"
     else
-        echo -en "\r${COLOR_RED}[${SYMBOL_X}]${COLOR_RESET} ${COLOR_WHITE}$1${COLOR_RESET}\n"
+        echo -en "\r${COLOR_WHITE}${COLOR_BOLD}[${COLOR_RED}${SYMBOL_X}${COLOR_WHITE}]${COLOR_RESET} $1\n"
     fi
 }
 

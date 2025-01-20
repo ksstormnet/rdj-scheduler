@@ -9,38 +9,70 @@ IFS=$'\n\t'
 
 # Tests database connection settings and ensures connectivity
 test_database_connection() {
-    status_testing "Testing database connection..."
-    
+    status_testing "DB: connect"
+
     if [ ! -f "${HOME}/.my.cnf" ]; then
-        status_failure "MySQL configuration file not found"
+        status_failure "Config file not found at ${HOME}/.my.cnf"
         return 1
     fi
-    
-    local test_query="SELECT VERSION()"
-    if ! db_select "$test_query" >/dev/null 2>&1; then
-        status_failure "Database connection test failed"
+    debug_write "Found MySQL configuration file"
+
+    local version test_query="SELECT VERSION()" test_output
+    if ! test_output=$(db_select "$test_query" 2>&1); then
+        status_failure "Connection failed - check MySQL config"
+        debug_write "Failed to execute: $test_query"
+        debug_write "Error output: $test_output"
         return 1
     fi
-    
-    status_success "Database connection test successful"
+    version=$test_output
+    debug_write "Database version: $version"
+    status_success "DB: connect"
     return 0
 }
 
 # Tests if the songs table exists and has correct structure
 test_songs_table() {
-    status_testing "Testing songs table"
+    status_testing "DB: read"
+
     if ! db_table_exists "songs"; then
-        status_failure "Songs table does not exist"
+        status_failure "Songs table not found"
+        debug_write "Failed to find songs table"
+        return 1
+    fi
+    debug_write "Found songs table"
+
+    # Get total song count
+    local test_query="SELECT COUNT(*) FROM songs" count
+    if ! count=$(db_select "$test_query" 2>&1); then
+        status_failure "Failed to get song count" 
+        debug_write "Failed to execute: $test_query"
+        debug_write "Error output: $count"
+        return 1
+    fi
+    debug_write "======================================"
+    debug_write "Total Songs in Database: $count songs"
+    debug_write "======================================"
+    debug_write ""
+
+    # Get random sample of songs
+    test_query="SELECT id, title, artist FROM songs ORDER BY RAND() LIMIT 5"
+    local test_output
+    if ! test_output=$(db_select "$test_query" 2>&1); then
+        status_failure "Failed to get song samples"
+        debug_write "Failed to execute: $test_query" 
+        debug_write "Error output: $test_output"
         return 1
     fi
 
-    local test_query="SHOW COLUMNS FROM songs"
-    debug_write "Checking songs table columns"
-    if ! db_select "$test_query" | grep -q "title"; then
-        status_failure "Songs table is missing required columns"
-        return 1
-    fi
-
-    status_success "Songs table test successful"
+    debug_write "Sample Songs from Database:"
+    debug_write "-----------------------------------"
+    debug_write "ID    | Title                    | Artist"
+    debug_write "-----------------------------------"
+    while IFS=$'\t' read -r id title artist; do
+        printf -v line "%-5s | %-24s | %s" "$id" "${title:0:24}" "${artist:0:30}"
+        debug_write "$line"
+    done <<< "$test_output"
+    debug_write "-----------------------------------"
+    status_success "DB: read"
     return 0
 }
