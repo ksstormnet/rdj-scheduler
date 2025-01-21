@@ -22,6 +22,12 @@ if ! source "${PROJECT_ROOT}/src/lib/core/display-helpers.sh"; then
     exit 1
 fi
 
+# Source logging functions (required)
+if ! source "${PROJECT_ROOT}/src/lib/core/logging.sh"; then
+    echo "Error: Failed to load logging.sh" >&2
+    exit 1
+fi
+
 # Main application logic goes here
 main() {
     # TODO: Implement main application logic
