@@ -5,17 +5,16 @@
 ```
 radiodj/
 ├── src/               # Source code
-│   ├── api/           # API related code
-│   ├── db/            # Database related code
-│   ├── lib/           # Shared libraries
-│   └── bin/           # Executable scripts
-├── test/              # Test files
-├── docs/              # Documentation
-│   ├── db/            # Database documentation
-│   ├── features/      # Feature-specific docs
-│   └── scheduling/    # Scheduling rules
-├── config/            # Configuration files
-└── backups/           # Backup files (git-ignored)
+│   ├── templates/     # Template system code
+│   ├── db/           # Database related code
+│   └── lib/          # Shared libraries
+├── test/             # Test files
+├── docs/             # Documentation
+│   ├── db/           # Database documentation
+│   ├── features/     # Feature-specific docs
+│   └── scheduling/   # Scheduling rules
+├── config/           # Configuration files
+└── backups/          # Backup files (git-ignored)
 ```
 
 ## Component Breakdown
@@ -35,7 +34,7 @@ radiodj/
     * Schema with sample data backup
     * Backup verification
 
-2. Template Management (Planned)
+2. Template Management (In Progress)
 - Hour template parsing and validation
 - Template generation and management
 - Template application logic
@@ -61,7 +60,7 @@ radiodj/
 5. ✓ Basic logging implementation
 6. ✓ Database backup functionality
 
-### Phase 2: Template Management (Next)
+### Phase 2: Template Management (In Progress)
 1. Template format definition
 2. Template parsing implementation
 3. Template validation logic

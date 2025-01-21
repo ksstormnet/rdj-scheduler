@@ -27,7 +27,7 @@ All commits must follow the structured format defined in the commit template:
 
 ### Scope Guidelines
 - Scope should indicate the area of change
-- Examples: db, api, docs, structure, tests
+- Examples: db, templates, docs, structure, tests
 - Use consistent scope names across commits
 - Optional but recommended
 
@@ -68,10 +68,9 @@ Examples:
 ### Source Code Structure
 ```
 src/
-├── api/     # API related code
-├── db/      # Database operations
-├── lib/     # Shared libraries
-└── bin/     # Executable scripts
+├── templates/     # Template system code
+├── db/           # Database operations
+└── lib/          # Shared libraries
 ```
 
 ### Documentation Structure
