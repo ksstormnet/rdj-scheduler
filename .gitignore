@@ -55,3 +55,4 @@ bats-*
 .bats/
 test_output/
 coverage/
+.work/
