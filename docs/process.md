@@ -1,17 +1,21 @@
 # Radio Scheduler Development Process
 
 ## Directory Structure
-4. ✓ Configuration management (using standard system configuration)
+
 ```
 radiodj/
-├── db/                  # Database interaction scripts
-│   ├── db-interface.sh  # Core database operations
-│   ├── db-test.sh      # Database testing utilities
-│   └── db-backup.sh    # Database backup operations
-├── tests/              # Test scripts 
-│   └── test-backup.sh  # Backup functionality tests
-├── config/             # Configuration files
-└── docs/              # Documentation and process files
+├── src/               # Source code
+│   ├── api/           # API related code
+│   ├── db/            # Database related code
+│   ├── lib/           # Shared libraries
+│   └── bin/           # Executable scripts
+├── test/              # Test files
+├── docs/              # Documentation
+│   ├── db/            # Database documentation
+│   ├── features/      # Feature-specific docs
+│   └── scheduling/    # Scheduling rules
+├── config/            # Configuration files
+└── backups/           # Backup files (git-ignored)
 ```
 
 ## Component Breakdown
@@ -46,6 +50,7 @@ radiodj/
 - Constraint checking
 - Pattern matching
 - Position rules
+
 ## Implementation Phases
 
 ### Phase 1: Database Foundation (Completed)
@@ -78,12 +83,33 @@ radiodj/
 1. Performance optimization
 2. RadioDJ export functionality
 3. Error handling improvements
-4. Documentation
+4. Documentation updates
+
+## Development Standards
+
+### Documentation Organization
+1. Root Level (/docs)
+- process.md: Overall development process
+- git-workflow.md: Git standards and practices
+
+2. Component Documentation
+- /docs/db/: Database-related documentation
+- /docs/scheduling/: Scheduling rules and logic
+- /docs/features/: Feature-specific documentation
+
+3. Documentation Guidelines
+- Organize by component/feature
+- Keep related docs together
+- Use clear, descriptive names
+- Include implementation details
+- Reference related documents
 
 ### Coding Standards (Completed)
 1. ✓ Function and file naming conventions
 2. ✓ Database naming conventions
 3. ✓ Code organization standards
+4. ✓ Git commit message standards
+
 ## Display Architecture
 
 ### Terminal Output Standards
@@ -187,4 +213,3 @@ radiodj/
 - Security patches
 - Performance optimization
 - Bug fixes
-

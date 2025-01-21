@@ -4,11 +4,27 @@
 
 ### 1. Backup Procedures
 - Create backup directory structure
+    * Use git-ignored /backups directory
+    * Implement subdirectory organization by date
+    * Ensure proper permissions
 - Implement timestamp-based backup naming
+    * Format: YYYY-MM-DD-HHMMSS-description.sql
+    * Include operation type in description
 - Add functions for SQL dump creation
+    * Full database dumps
+    * Table-specific dumps
+    * Schema-only dumps with sample data
 - Verify backup integrity
+    * Checksum verification
+    * Sample restore tests
 - Add backup verification functions
+    * Automatic post-backup verification
+    * Schema validation
+    * Data sampling checks
 - Document backup format and location
+    * Document retention policy
+    * Cleanup procedures
+    * Emergency restore procedures
 
 ### 2. Database Validation
 - Verify table structures:
@@ -92,13 +108,49 @@
 
 ## Safety Requirements
 - Always create verified backups before changes
+    * Use /backups directory (git-ignored)
+    * Implement automated verification
 - Use transactions for all modifications
+    * Begin transaction before changes
+    * Verify changes meet requirements
+    * Commit or rollback based on validation
 - Validate all data before changes
+    * Schema validation
+    * Data integrity checks
+    * Business rule compliance
 - Provide rollback capability
+    * Transaction rollback
+    * Backup restore procedures
 - Log all operations
+    * Use structured logging
+    * Include operation details
+    * Record timestamps and users
 - Handle errors gracefully
+    * Clear error messages
+    * Appropriate exit codes
+    * Cleanup on failure
 - Report clear status
+    * Use status indicators
+    * Show progress
+    * Indicate completion state
 - Verify all results
+    * Data validation
+    * Schema verification
+    * Business rule checking
+
+## Version Control Standards
+- Commit Message Format
+    * feat(template): implement template validation
+    * fix(backup): correct backup file naming
+    * refactor(template): optimize rule checking
+- Branch Management
+    * feature/template-generation
+    * bugfix/backup-verification
+    * task/refactor-validation
+- Code Review Requirements
+    * Test coverage
+    * Documentation updates
+    * Safety compliance
 
 ## Notes
 - All database operations require prior backup
@@ -108,3 +160,6 @@
 - Log files must capture operation results
 - Status must be clear via exit codes
 - Error messages must be actionable
+- Use appropriate commit messages for each change
+- Document all safety procedures
+- Keep backups in designated directory
