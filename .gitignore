@@ -1,9 +1,57 @@
-# Ignore logs directory and files
+# Editor and IDE files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.zed/
+*.swp
+*~
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temporary and working directories
+.work/
+tmp/
+temp/
+*.tmp
+
+# Logs and debugging
 logs/
 *.log
+debug/
+.debug
 
 # Backup files
 backups/
-*.sql
 *.bak
+*.old
 tmp/backup/
+
+# Shell script artifacts
+*.sh.x
+*.sh~
+*.shc
+core.*
+.shellcheckrc
+
+# Runtime files
+*.pid
+*.sock
+
+# Environment and config
+.env
+.env.*
+!.env.example
+config.local
+*.local.conf
+
+# Generated documentation
+docs/_build/
+man/
+
+# Test artifacts
+bats-*
+.bats/
+test_output/
+coverage/
