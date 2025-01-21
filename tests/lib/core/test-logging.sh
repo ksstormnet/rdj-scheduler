@@ -10,83 +10,10 @@
 # See LICENSE file for terms of use
 #######################################
 
-# Get absolute path of script location and change to project root
-cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../" && pwd)" || {
+# Change to project root
+cd "${PROJECT_ROOT}" || {
     echo "Error: Failed to change to project root directory" >&2
     exit 1
-}
-
-# Source display helpers (required)
-source "src/lib/core/display-helpers.sh" || {
-    echo "Error: Failed to load display-helpers.sh" >&2
-    exit 1
-}
-
-# Test tracking variables
-tests_total=0
-tests_passed=0
-tests_failed=0
-
-#######################################
-# Assert test condition with formatted output
-# Arguments:
-#   $1 - Test description
-#   $2 - Command to evaluate
-#   $3 - Optional additional details
-# Returns:
-#   0 if test passes, 1 if test fails
-#######################################
-assert() {
-    local message="$1"
-    local condition="$2"
-    local detail="${3:-}"
-    local error_output
-    
-    ((tests_total++))
-    status_testing "$message"
-    
-    if error_output=$(eval "$condition" 2>&1); then
-        status_success "$message"
-        ((tests_passed++))
-        return 0
-    else
-        status_failure "$message"
-        if [[ -n "$detail" ]]; then
-            echo -e "${COLOR_RED}Detail: ${detail}${COLOR_RESET}"
-        fi
-        echo -e "${COLOR_RED}Condition: ${condition}${COLOR_RESET}"
-        echo -e "${COLOR_RED}Error output: ${error_output}${COLOR_RESET}"
-        ((tests_failed++))
-        return 1
-    fi
-}
-
-#######################################
-# Set up test environment
-# Arguments:
-#   None
-# Returns:
-#   0 if setup succeeds, 1 if fails
-#######################################
-setup_test_environment() {
-    status_testing "Setting up test environment"
-    
-    # Create logs directory
-    mkdir -p "logs" || {
-        status_failure "Failed to create logs directory"
-        return 1
-    }
-    
-    # Configure logging
-    export LOG_FILE="logs/test.log"
-    export LOG_LEVEL="${LOG_LEVEL_DEBUG:-3}"
-    
-    # Remove existing log file
-    rm -f "$LOG_FILE"
-    
-    status_success "Test environment setup complete"
-    debug_write " - Log file: $LOG_FILE"
-    debug_write " - Log level: $LOG_LEVEL"
 }
 
 #######################################
@@ -97,10 +24,23 @@ setup_test_environment() {
 #   0 if all tests pass, 1 if any fail
 #######################################
 test_initialization() {
-    status_testing "Testing logging initialization"
-    source "src/lib/core/logging.sh"
-    init_logging
+    begin_test_group "Logging Initialization"
+    
+    # Clear any existing log file
+    rm -f "$LOG_FILE"
+    
+    # Test initialization
+    assert "Logging initialization" "init_logging" "Failed to initialize logging"
+    
+    # Immediately check log file existence and emptiness
     assert "Log file created" "[ -f '$LOG_FILE' ]" "Log file creation failed"
+    assert_equals "Log file initially empty" "0" "$(wc -l < "$LOG_FILE")" "Log file should be empty after initialization"
+    
+    # Test permissions after we've verified existence
+    assert_matches "Log file permissions" "$(stat -c %a "$LOG_FILE")" "^[6][0-9][0-9]$" "Log file permissions should be user writable"
+    
+    # Now we can start logging for other tests
+    log_debug "Initialization tests complete"
 }
 
 #######################################
@@ -111,12 +51,30 @@ test_initialization() {
 #   0 if all tests pass, 1 if any fail
 #######################################
 test_log_levels() {
-    status_testing "Testing log levels"
+    begin_test_group "Log Levels and Formatting"
     
-    assert "Debug logging" "log_debug 'Test debug message' && grep -q '\[DEBUG\] Test debug message' '$LOG_FILE'"
-    assert "Info logging" "log_info 'Test info message' && grep -q '\[INFO\] Test info message' '$LOG_FILE'"
-    assert "Warning logging" "log_warn 'Test warning message' && grep -q '\[WARN\] Test warning message' '$LOG_FILE'"
-    assert "Error logging" "log_error 'Test error message' && grep -q '\[ERROR\] Test error message' '$LOG_FILE'"
+    # Clear log file before testing
+    rm -f "$LOG_FILE"
+    init_logging
+    
+    # Test debug logging
+    log_debug "Test debug message"
+    assert_contains "Debug logging" "$(cat "$LOG_FILE")" "[DEBUG] Test debug message"
+    
+    # Test info logging
+    log_info "Test info message"
+    assert_contains "Info logging" "$(cat "$LOG_FILE")" "[INFO] Test info message"
+    
+    # Test warning logging
+    log_warn "Test warning message"
+    assert_contains "Warning logging" "$(cat "$LOG_FILE")" "[WARN] Test warning message"
+    
+    # Test error logging
+    log_error "Test error message"
+    assert_contains "Error logging" "$(cat "$LOG_FILE")" "[ERROR] Test error message"
+    
+    # Test timestamp format
+    assert_matches "Timestamp format" "$(head -n1 "$LOG_FILE")" "^\[[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\]"
 }
 
 #######################################
@@ -127,38 +85,24 @@ test_log_levels() {
 #   0 if all tests pass, 1 if any fail
 #######################################
 test_log_filtering() {
-    status_testing "Testing log level filtering"
+    begin_test_group "Log Level Filtering"
     
-    # Clear log file
+    # Clear log file and reinitialize
     rm -f "$LOG_FILE"
-    
-    # Set to INFO level
-    export LOG_LEVEL="${LOG_LEVEL_INFO:-2}"
+    export LOG_LEVEL="$LOG_LEVEL_INFO"
     init_logging
     
+    # Test debug messages are filtered
     log_debug "Should not appear in log"
-    log_info "Should appear in log"
-    
     assert "Debug messages filtered" "! grep -q 'Should not appear' '$LOG_FILE'"
-    assert "Info messages logged" "grep -q 'Should appear' '$LOG_FILE'"
-}
-
-#######################################
-# Print test summary
-# Arguments:
-#   None
-# Outputs:
-#   Test summary to stdout
-#######################################
-print_summary() {
-    echo
-    echo -e "${COLOR_WHITE}${COLOR_BOLD}Test Summary:${COLOR_RESET}"
-    echo -e "Total tests: ${tests_total}"
-    echo -e "${COLOR_GREEN}Passed: ${tests_passed}${COLOR_RESET}"
     
-    if [[ ${tests_failed} -gt 0 ]]; then
-        echo -e "${COLOR_RED}Failed: ${tests_failed}${COLOR_RESET}"
-    fi
+    # Test info messages appear
+    log_info "Should appear in log"
+    assert_contains "Info messages logged" "$(cat "$LOG_FILE")" "Should appear in log"
+    
+    # Test error always appears regardless of level
+    log_error "Error message"
+    assert_contains "Error messages always logged" "$(cat "$LOG_FILE")" "Error message"
 }
 
 #######################################
@@ -169,17 +113,13 @@ print_summary() {
 #   0 if all tests pass, 1 if any fail
 #######################################
 main() {
-    # Disable error exit for tests
-    set +e
+    setup_test_environment "Logging Module Tests" || exit 1
     
-    setup_test_environment
     test_initialization
     test_log_levels
     test_log_filtering
-    print_summary
     
-    # Exit with failure if any tests failed
-    [[ ${tests_failed} -eq 0 ]]
+    cleanup_test_environment
 }
 
 main

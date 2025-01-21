@@ -1,133 +1,113 @@
 #!/usr/bin/env bash
 #######################################
-# Display Helpers Test Suite
+# Display Helpers Tests
 # Last Updated: 2025-01-21
 #
-# Test suite for core display functionality.
-# Verifies color codes, symbols, and display functions.
+# Test suite for the display helper functions. Validates
+# color codes, symbols, and status display functions.
 #
 # Copyright 2025 Sky+Sea, LLC d/b/a KSStorm Media
 # See LICENSE file for terms of use
 #######################################
 
-# Enable strict mode
-set -euo pipefail
-IFS=$'\n\t'
-
-# Ensure PROJECT_ROOT is set
-if [[ -z "${PROJECT_ROOT:-}" ]]; then
-    echo "ERROR: PROJECT_ROOT must be set before running tests" >&2
+# Change to project root
+cd "${PROJECT_ROOT}" || {
+    echo "Error: Failed to change to project root directory" >&2
     exit 1
-fi
-
-# Source the display helpers
-if ! source "${PROJECT_ROOT}/src/lib/core/display-helpers.sh"; then
-    echo "ERROR: Failed to source display-helpers.sh" >&2
-    exit 1
-fi
-
-# Test Setup
-setup_test() {
-    OUTPUT_FILE=$(mktemp)
-    ERROR_FILE=$(mktemp)
-    echo "Created test files: ${OUTPUT_FILE} ${ERROR_FILE}"
 }
 
-teardown_test() {
-    echo "Test output content:"
-    cat "${OUTPUT_FILE}"
-    echo "Test error content:"
-    cat "${ERROR_FILE}"
-    rm -f "${OUTPUT_FILE}" "${ERROR_FILE}"
-}
-
-# Test Cases
+#######################################
+# Test color code exports and formatting
+# Arguments:
+#   None
+# Returns:
+#   0 if all tests pass, 1 if any fail
+#######################################
 test_color_code_exports() {
+    begin_test_group "Color Code Exports"
+
     # Test color code definitions
-    [[ -n "${COLOR_RED}" ]] || (echo "COLOR_RED not defined" && return 1)
-    [[ -n "${COLOR_GREEN}" ]] || (echo "COLOR_GREEN not defined" && return 1)
-    [[ -n "${COLOR_YELLOW}" ]] || (echo "COLOR_YELLOW not defined" && return 1)
-    [[ -n "${COLOR_RESET}" ]] || (echo "COLOR_RESET not defined" && return 1)
-    
+    assert "COLOR_RED defined" "[[ -n '${COLOR_RED}' ]]" "COLOR_RED should be defined"
+    assert "COLOR_GREEN defined" "[[ -n '${COLOR_GREEN}' ]]" "COLOR_GREEN should be defined"
+    assert "COLOR_YELLOW defined" "[[ -n '${COLOR_YELLOW}' ]]" "COLOR_YELLOW should be defined"
+    assert "COLOR_RESET defined" "[[ -n '${COLOR_RESET}' ]]" "COLOR_RESET should be defined"
+
     # Verify color codes are ANSI escape sequences
-    [[ "${COLOR_RED}" == *$'\e['* ]] || (echo "COLOR_RED not ANSI escape sequence" && return 1)
-    [[ "${COLOR_GREEN}" == *$'\e['* ]] || (echo "COLOR_GREEN not ANSI escape sequence" && return 1)
-    [[ "${COLOR_YELLOW}" == *$'\e['* ]] || (echo "COLOR_YELLOW not ANSI escape sequence" && return 1)
-    
-    return 0
+    assert_contains "COLOR_RED is ANSI" "${COLOR_RED}" $'\e[' "COLOR_RED should be ANSI escape sequence"
+    assert_contains "COLOR_GREEN is ANSI" "${COLOR_GREEN}" $'\e[' "COLOR_GREEN should be ANSI escape sequence"
+    assert_contains "COLOR_YELLOW is ANSI" "${COLOR_YELLOW}" $'\e[' "COLOR_YELLOW should be ANSI escape sequence"
 }
 
+#######################################
+# Test display symbol definitions
+# Arguments:
+#   None
+# Returns:
+#   0 if all tests pass, 1 if any fail
+#######################################
 test_symbol_definitions() {
-    # Test symbol definitions
-    [[ -n "${SYMBOL_CHECK}" ]] || (echo "SYMBOL_CHECK not defined" && return 1)
-    [[ -n "${SYMBOL_X}" ]] || (echo "SYMBOL_X not defined" && return 1)
-    [[ -n "${SYMBOL_TESTING}" ]] || (echo "SYMBOL_TESTING not defined" && return 1)
-    
-    return 0
+    begin_test_group "Display Symbols"
+
+    assert "SYMBOL_CHECK defined" "[[ -n '${SYMBOL_CHECK}' ]]" "SYMBOL_CHECK should be defined"
+    assert "SYMBOL_X defined" "[[ -n '${SYMBOL_X}' ]]" "SYMBOL_X should be defined"
+    assert "SYMBOL_TESTING defined" "[[ -n '${SYMBOL_TESTING}' ]]" "SYMBOL_TESTING should be defined"
+
+    # Verify symbol contents
+    assert_matches "SYMBOL_CHECK format" "${SYMBOL_CHECK}" "^[✓]$" "SYMBOL_CHECK should be check mark"
+    assert_matches "SYMBOL_X format" "${SYMBOL_X}" "^[✗]$" "SYMBOL_X should be X mark"
+    assert_matches "SYMBOL_TESTING format" "${SYMBOL_TESTING}" "^[.]$" "SYMBOL_TESTING should be dot"
 }
 
+#######################################
+# Test status display functions
+# Arguments:
+#   None
+# Returns:
+#   0 if all tests pass, 1 if any fail
+#######################################
 test_status_functions() {
-    setup_test
-    
-    echo "Testing status_testing function..."
-    status_testing "Test Message" > "${OUTPUT_FILE}"
-    if ! grep -q "Test Message" "${OUTPUT_FILE}"; then
-        echo "FAIL: status_testing output not found"
-        echo "Output file content:"
-        cat "${OUTPUT_FILE}"
-        teardown_test
-        return 1
-    fi
-    
-    echo "Testing status_success function..."
-    status_success "Success Message" > "${OUTPUT_FILE}"
-    if ! grep -q "Success Message" "${OUTPUT_FILE}"; then
-        echo "FAIL: status_success output not found"
-        echo "Output file content:"
-        cat "${OUTPUT_FILE}"
-        teardown_test
-        return 1
-    fi
-    
-    echo "Testing status_failure function..."
-    status_failure "Failure Message" > "${OUTPUT_FILE}"
-    if ! grep -q "Failure Message" "${OUTPUT_FILE}"; then
-        echo "FAIL: status_failure output not found"
-        echo "Output file content:"
-        cat "${OUTPUT_FILE}"
-        teardown_test
-        return 1
-    fi
-    
-    teardown_test
-    return 0
+    begin_test_group "Status Functions"
+
+    # Create temporary files for output capture
+    local output_file error_file
+    output_file=$(mktemp)
+    error_file=$(mktemp)
+    debug_write "Created test files: ${output_file} ${error_file}"
+
+    # Test status_testing function
+    status_testing "Test Message" > "${output_file}"
+    assert_contains "status_testing output" "$(cat "${output_file}")" "Test Message"
+    assert_contains "status_testing symbol" "$(cat "${output_file}")" "${SYMBOL_TESTING}"
+
+    # Test status_success function
+    status_success "Success Message" > "${output_file}"
+    assert_contains "status_success output" "$(cat "${output_file}")" "Success Message"
+    assert_contains "status_success symbol" "$(cat "${output_file}")" "${SYMBOL_CHECK}"
+
+    # Test status_failure function
+    status_failure "Failure Message" > "${output_file}"
+    assert_contains "status_failure output" "$(cat "${output_file}")" "Failure Message"
+    assert_contains "status_failure symbol" "$(cat "${output_file}")" "${SYMBOL_X}"
+
+    # Clean up test files
+    rm -f "${output_file}" "${error_file}"
 }
 
-# Test runner
-run_tests() {
-    local test_functions=(
-        "test_color_code_exports"
-        "test_symbol_definitions"
-        "test_status_functions"
-    )
-    
-    local failures=0
-    
-    echo "Running display-helpers.sh tests..."
-    for test_function in "${test_functions[@]}"; do
-        echo -n "Running ${test_function}... "
-        if ${test_function}; then
-            echo "PASS"
-        else
-            echo "FAIL"
-            ((failures++))
-        fi
-    done
-    
-    return ${failures}
+#######################################
+# Main test execution
+# Arguments:
+#   None
+# Returns:
+#   0 if all tests pass, 1 if any fail
+#######################################
+main() {
+    setup_test_environment "Display Helpers Tests" || exit 1
+
+    test_color_code_exports
+    test_symbol_definitions
+    test_status_functions
+
+    cleanup_test_environment
 }
 
-# Run tests if this script is executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    run_tests
-fi
+main

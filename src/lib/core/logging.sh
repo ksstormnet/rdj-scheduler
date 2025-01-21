@@ -10,11 +10,16 @@
 # See LICENSE file for terms of use
 #######################################
 
-# Log levels
-readonly LOG_LEVEL_ERROR=0
-readonly LOG_LEVEL_WARN=1
-readonly LOG_LEVEL_INFO=2
-readonly LOG_LEVEL_DEBUG=3
+# Log level definitions (only if not already defined)
+if [[ -z "${LOG_LEVEL_ERROR:-}" ]]; then
+    declare -g LOG_LEVEL_ERROR=0
+    declare -g LOG_LEVEL_WARN=1
+    declare -g LOG_LEVEL_INFO=2
+    declare -g LOG_LEVEL_DEBUG=3
+fi
+
+# Default log file location if not set
+: "${LOG_FILE:=logs/app.log}"
 
 #######################################
 # Initialize logging with specified configuration
@@ -27,12 +32,6 @@ readonly LOG_LEVEL_DEBUG=3
 #   0 if initialization succeeds, 1 if fails
 #######################################
 init_logging() {
-    # Validate required environment variables
-    if [[ -z "${LOG_FILE}" ]]; then
-        echo "Error: LOG_FILE environment variable not set" >&2
-        return 1
-    fi
-
     # Set default log level if not specified
     LOG_LEVEL=${LOG_LEVEL:-$LOG_LEVEL_INFO}
 
@@ -124,4 +123,3 @@ log_warn() {
 log_error() {
     _log $LOG_LEVEL_ERROR "ERROR" "$1"
 }
-
