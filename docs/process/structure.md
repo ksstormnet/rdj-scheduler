@@ -21,6 +21,13 @@ radiodj/
 │   │   └── core/       # Core component tests
 │   └── db/             # Database tests
 ├── docs/               # Documentation
+│   ├── process/        # Development process docs
+│   │   ├── overview.md      # Project overview
+│   │   ├── structure.md     # This file
+│   │   ├── standards.md     # Development standards
+│   │   ├── testing.md       # Test framework docs
+│   │   ├── components.md    # Implementation status
+│   │   └── documentation.md # Doc standards
 │   ├── db/             # Database documentation
 │   ├── features/       # Feature-specific docs
 │   └── scheduling/     # Scheduling rules
@@ -62,7 +69,7 @@ Test Path:
 1. display-helpers.sh (First, authoritative)
 2. logging.sh (Core logging)
 3. test-framework.sh (Test infrastructure)
-4. Individual tests
+4. Individual tests (in dependency order)
 ```
 
 ### Entry Point Standards
@@ -87,8 +94,60 @@ source "src/lib/loaders/core-loader.sh"
 readonly PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${PROJECT_ROOT}"
 
-# Load core dependencies
+# Load core dependencies for main script
 source "src/lib/core/display-helpers.sh"
 source "src/lib/core/logging.sh"
 source "src/lib/core/test-framework.sh"
+
+# Execute tests in isolated subshells
+run_single_test() {
+    local test_file="$1"
+    
+    # Run test in subshell with fresh environment
+    (
+        export PROJECT_ROOT="$(pwd)"
+        source "src/lib/core/display-helpers.sh"
+        source "src/lib/core/logging.sh"
+        source "src/lib/core/test-framework.sh"
+        source "$test_file"
+    )
+}
+
+# Run tests in dependency order
+run_test_suite() {
+    # Core modules first (order matters)
+    run_single_test "tests/lib/core/test-display-helpers.sh"
+    run_single_test "tests/lib/core/test-logging.sh"
+    
+    # Then discover and run remaining tests
+    find "tests" -type f -name "test-*.sh"
+}
 ```
+
+### Dependency Management
+
+1. Core Module Dependencies
+```
+display-helpers.sh  <-- logging.sh
+                      ^
+                      |
+                  test-framework.sh
+```
+
+2. Test Isolation
+- Each test runs in its own subshell
+- Fresh environment for each test
+- Dependencies reloaded per test
+- No cross-test contamination
+
+3. Test Order Enforcement
+- Core modules tested first
+- display-helpers.sh tests run first
+- logging.sh tests run second
+- Additional tests discovered and run after core tests
+
+4. Environment Management
+- PROJECT_ROOT set by entry points
+- Each test changes to PROJECT_ROOT
+- Clean environment per test
+- Proper cleanup after each test
