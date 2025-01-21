@@ -148,6 +148,27 @@ bats tests/
 shellcheck *.sh
 ```
 
+### Coding Standards
+
+#### Function and File Naming
+- Files: Use descriptive lowercase names with hyphens (e.g., `context-manager.sh`)
+- Functions: Use snake_case for internal functions (e.g., `validate_input`)
+- Public Functions: Use module_function_name format (e.g., `context_verify_relationship`)
+- Test Files: Mirror implementation name with 'test-' prefix (e.g., `test-context-manager.sh`)
+- Test Functions: Use test_ prefix (e.g., `test_verify_relationship`)
+
+#### Database Naming
+- Table Names: Use lowercase with underscores (e.g., `rotation_templates`)
+- Column Names: Follow RadioDJ conventions (e.g., `ID`, `catID`, `subID`)
+- Test Tables: Add '_test' suffix for test data (e.g., `categories_test`)
+
+#### Code Organization
+- Group related functions together
+- Add descriptive comments for function blocks
+- Use consistent indentation (4 spaces)
+- Keep functions focused and single-purpose
+- Follow shellcheck recommendations
+
 ## Contributing
 
 1. Fork the repository
